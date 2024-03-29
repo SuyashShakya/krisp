@@ -1,10 +1,13 @@
-import React from "react";
-import logo from "./logo.svg";
 import "./App.css";
+import InfiniteScroll from "./feature/InfiniteScroll";
 
 function App() {
   return (
-    <h1 className="text-3xl text-blue-700 font-bold underline">Hello world!</h1>
+    <main className="flex justify-center">
+      <div className="flex flex-col p-4 md:px-20 md:py-8 gap-36 max-w-screen-2xl">
+        <InfiniteScroll />
+      </div>
+    </main>
   );
 }
 
