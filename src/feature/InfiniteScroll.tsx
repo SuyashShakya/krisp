@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 
+// Card component for displaying individual items
 const ItemsCardComponent = (props: {
   id: number;
   title: string;
@@ -17,6 +18,7 @@ const ItemsCardComponent = (props: {
 };
 
 const InfiniteScroll = () => {
+  // State variables
   const [items, setItems] = useState<
     { body: string; id: number; title: string; userId: number }[]
   >([]);
@@ -26,6 +28,7 @@ const InfiniteScroll = () => {
   const [error, setError] = useState<string | null>(null);
   const pageRef = useRef<number>(1);
 
+  // Fetch data from API
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -57,6 +60,7 @@ const InfiniteScroll = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Load more items when scrolling
   const handleScroll = () => {
     const { scrollTop, clientHeight, scrollHeight } = document.documentElement;
     if (scrollTop + clientHeight >= scrollHeight - 20) {
@@ -71,6 +75,7 @@ const InfiniteScroll = () => {
     }
   };
 
+  // Filter items based on search query
   const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value;
     setSearchQuery(query);
