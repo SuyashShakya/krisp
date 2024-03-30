@@ -1,6 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 
-const CardComponent = (props: { id: number; title: string; body: string }) => {
+const ItemsCardComponent = (props: {
+  id: number;
+  title: string;
+  body: string;
+}) => {
   const { id, title, body } = props;
   return (
     <div className="p-4 border rounded-lg">
@@ -16,7 +20,7 @@ const InfiniteScroll = () => {
   const [items, setItems] = useState<
     { body: string; id: number; title: string; userId: number }[]
   >([]);
-  const [filteredItems, setFilteredItems] = useState<any[]>([]);
+  const [filteredItems, setFilteredItems] = useState<typeof items>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -34,6 +38,7 @@ const InfiniteScroll = () => {
       const data = await response.json();
 
       setItems((prevItems) => [...prevItems, ...data]);
+      setFilteredItems((prevItems) => [...prevItems, ...data]);
       setLoading(false);
       setError(null);
     } catch (error: any) {
@@ -49,6 +54,7 @@ const InfiniteScroll = () => {
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleScroll = () => {
@@ -80,6 +86,7 @@ const InfiniteScroll = () => {
       <p className="text-3xl font-medium">Infinite Scroll</p>
       <div>
         <input
+          className="border-none focus:outline-none"
           type="text"
           placeholder="Search..."
           value={searchQuery}
@@ -87,13 +94,17 @@ const InfiniteScroll = () => {
         />
       </div>
       {error && <p className="text-xl font-bold">Error: {error}</p>}
+      {filteredItems?.length === 0 && (
+        <p className="text-xl font-bold">No Items</p>
+      )}
       {filteredItems?.map((item, index) => (
-        <CardComponent
-          key={`${item?.id}-${index}`}
-          id={item?.id}
-          title={item?.title}
-          body={item?.body}
-        />
+        <div role="listitem" key={`${item?.id}-${index}`}>
+          <ItemsCardComponent
+            id={item?.id}
+            title={item?.title}
+            body={item?.body}
+          />
+        </div>
       ))}
       {loading && <p className="text-xl font-bold">Loading...</p>}
     </div>
