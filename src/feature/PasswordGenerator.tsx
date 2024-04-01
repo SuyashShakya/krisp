@@ -2,7 +2,6 @@ import React, { useState } from "react";
 
 const PasswordGenerator = () => {
   const [passwordLength, setPasswordLength] = useState<number>(8);
-
   const [password, setPassword] = useState<string>("");
 
   const generatePassword = (): string => {
@@ -22,8 +21,21 @@ const PasswordGenerator = () => {
   };
 
   const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const length = e.target.value;
-    setPasswordLength(Number(length));
+    let length = Number(e.target.value);
+    if (isNaN(length) || length < 8) {
+      length = 8;
+    } else if (length > 128) {
+      length = 128;
+    }
+    length = Math.floor(length); // Ensure length is an integer
+
+    // Check for the letter 'e'
+    const containsE = e.target.value.includes("e");
+    if (containsE) {
+      length = passwordLength; // Keep the previous valid length
+    }
+
+    setPasswordLength(length);
   };
 
   return (
@@ -37,11 +49,16 @@ const PasswordGenerator = () => {
           placeholder="Enter the Length of password"
           value={passwordLength}
           onChange={handleSearchInputChange}
+          min={8}
+          max={128}
         />
       </div>
       <div>
         <p>Generated Password:</p>
-        <div className="p-4 border border-gray-300 break-all rounded-lg">
+        <div
+          className="p-4 border border-gray-300 break-all rounded-lg"
+          data-testid="generated-password"
+        >
           {password}
         </div>
       </div>

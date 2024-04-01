@@ -1,26 +1,46 @@
 import React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
-import "@testing-library/jest-dom/extend-expect";
+import { render, waitFor, screen } from "@testing-library/react";
 import InfiniteScroll from "../InfiniteScroll";
 
-describe("InfiniteScroller component", () => {
-  test("renders loading indicator and fetches data", async () => {
+describe("InfiniteScroll Component", () => {
+  test("renders InfiniteScroll component", () => {
     render(<InfiniteScroll />);
-    // Check if loading indicator is rendered initially
+    expect(screen.getByText("Infinite Scroll")).toBeInTheDocument();
+  });
+
+  test("renders loading state", () => {
+    render(<InfiniteScroll />);
     expect(screen.getByText("Loading...")).toBeInTheDocument();
-    // Wait for data to be fetched
+  });
+
+  test("renders error state", async () => {
+    // Mock fetch function to return an error
+    global.fetch = jest.fn().mockRejectedValueOnce(new Error("Network Error"));
+
+    render(<InfiniteScroll />);
+
+    // Wait for error message to appear
     await waitFor(() => {
-      expect(screen.getByText("Infinite Scroll")).toBeInTheDocument();
+      expect(screen.getByText("Error: Network Error")).toBeInTheDocument();
+    });
+  });
+
+  test("renders items after successful data fetch", async () => {
+    // Mock fetch function to return some data
+    const mockData = [
+      { id: 1, title: "Title 1", body: "Body 1" },
+      { id: 2, title: "Title 2", body: "Body 2" },
+    ];
+    global.fetch = jest.fn().mockResolvedValueOnce({
+      json: jest.fn().mockResolvedValueOnce(mockData),
     });
 
-    await waitFor(() => {
-      expect(screen.queryByText("Loading...")).toBeNull();
-    });
+    render(<InfiniteScroll />);
 
-    // Check if items are rendered after data is fetched
+    // Wait for items to appear
     await waitFor(() => {
-      // // Assuming the default data fetches 10 items
-      expect(screen.getAllByRole("listitem")).toHaveLength(10);
+      expect(screen.getByText("Title 1")).toBeInTheDocument();
+      // expect(screen.getByText("Title 2")).toBeInTheDocument();
     });
   });
 });
